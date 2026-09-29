@@ -1,12 +1,21 @@
 name: Relatório
 
-# Avalia as duas versões do bot, falha se a versão nova regredir
-# e anexa o relatório HTML à execução (aba Actions > Artifacts).
+# Avalia as duas versões do bot, falha se a versão nova regredir,
+# anexa o relatório HTML à execução e o publica no GitHub Pages a cada push na main.
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: relatorio-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   avaliar:
@@ -21,7 +30,8 @@ jobs:
         run: |
           mkdir -p site
           atendimento-eval avaliar data/conversas_v1.jsonl --saida v1.json --html site/antes.html
-          atendimento-eval avaliar data/conversas_v2.jsonl --saida v2.json --html site/depois.html --base v1.json
+          atendimento-eval avaliar data/conversas_v2.jsonl --saida v2.json --html site/index.html --base v1.json
+          sed -i 's|<h1>|<p><a href="antes.html">Ver o relatório da versão base (v1) →</a></p><h1>|' site/index.html
       - name: Checar regressões
         run: atendimento-eval comparar v1.json v2.json
       - uses: actions/upload-artifact@v4
@@ -29,3 +39,18 @@ jobs:
         with:
           name: relatorio
           path: site
+      - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  publicar:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: avaliar
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

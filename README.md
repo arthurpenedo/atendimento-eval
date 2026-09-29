@@ -21,6 +21,8 @@ O `atendimento-eval` responde isso com um pipeline de avaliação:
 
 ## Demo
 
+**Relatório ao vivo:** [arthurpenedo.github.io/atendimento-eval](https://arthurpenedo.github.io/atendimento-eval/) (versão v2 comparada com a v1, atualizado pelo CI a cada push).
+
 Mesmas 6 demandas de clientes de um banco fictício, respondidas por duas versões de um bot:
 
 ```text
@@ -61,7 +63,7 @@ Um único arquivo, sem dependências, com modo escuro. Com `--base`, mostra a va
 
 ### Regressão no CI
 
-O workflow [`relatorio.yml`](.github/workflows/relatorio.yml) avalia as duas versões a cada push e pull request, **falha se a versão nova regredir** em qualquer critério e anexa os relatórios HTML à execução (Actions → Artifacts). É o mesmo fluxo que um time usaria para aprovar uma mudança de prompt.
+O workflow [`relatorio.yml`](.github/workflows/relatorio.yml) avalia as duas versões a cada push e pull request, **falha se a versão nova regredir** em qualquer critério anexa os relatórios HTML à execução e publica o da `main` no [GitHub Pages](https://arthurpenedo.github.io/atendimento-eval/). É o mesmo fluxo que um time usaria para aprovar uma mudança de prompt.
 
 ## Arquitetura
 
@@ -106,6 +108,7 @@ Formato de entrada (JSONL, uma conversa por linha):
 - [ ] Concordância juiz × avaliador humano (kappa) em uma amostra rotulada
 - [ ] Avaliação em lote com a Batches API (50% mais barata)
 - [x] GitHub Action que roda a comparação a cada mudança
+- [x] Demo pública do relatório no GitHub Pages
 - [ ] Evidências do juiz LLM destacadas na transcrição
 
 ---
