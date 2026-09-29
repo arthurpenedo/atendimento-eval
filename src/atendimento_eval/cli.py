@@ -1,6 +1,7 @@
 """CLI.
 
     atendimento-eval avaliar data/conversas_v1.jsonl [--rubrica rubricas/padrao.yaml] [--juiz] [--saida r.json]
+                             [--html relatorio.html] [--base resumo_v1.json]
     atendimento-eval comparar resumo_v1.json resumo_v2.json
 """
 
@@ -10,6 +11,7 @@ import sys
 from pathlib import Path
 
 from .evaluator import compare, evaluate_all, load_conversations, load_rubric, summarize
+from .report import render_html
 
 DEFAULT_RUBRIC = Path(__file__).parent / "rubricas" / "padrao.yaml"
 
@@ -36,6 +38,8 @@ def main(argv: list[str] | None = None) -> int:
     p_eval.add_argument("--rubrica", type=Path, default=DEFAULT_RUBRIC)
     p_eval.add_argument("--juiz", action="store_true", help="usa o Claude para os critérios do tipo 'llm'")
     p_eval.add_argument("--saida", type=Path, help="salva resultados e resumo em JSON")
+    p_eval.add_argument("--html", type=Path, help="gera relatório HTML com as piores conversas")
+    p_eval.add_argument("--base", type=Path, help="JSON de outra execução (--saida) para comparar no relatório")
 
     p_cmp = sub.add_parser("comparar", help="compara dois resumos salvos com --saida")
     p_cmp.add_argument("antes", type=Path)
@@ -50,7 +54,8 @@ def main(argv: list[str] | None = None) -> int:
             from .judge import ClaudeJudge
 
             judge = ClaudeJudge()
-        results = evaluate_all(load_conversations(args.conversas), criteria, judge)
+        conversations = load_conversations(args.conversas)
+        results = evaluate_all(conversations, criteria, judge)
         summary = summarize(results)
         _print_summary(summary)
         if args.saida:
@@ -58,6 +63,10 @@ def main(argv: list[str] | None = None) -> int:
                 "resumo": summary,
                 "resultados": [r.model_dump() for r in results],
             }, ensure_ascii=False, indent=2), encoding="utf-8")
+        if args.html:
+            base = json.loads(args.base.read_text(encoding="utf-8"))["resumo"] if args.base else None
+            args.html.write_text(render_html(summary, results, conversations, base), encoding="utf-8")
+            print(f"Relatório salvo em {args.html}")
         return 0
 
     before = json.loads(args.antes.read_text(encoding="utf-8"))["resumo"]

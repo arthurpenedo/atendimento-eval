@@ -1,6 +1,7 @@
 # atendimento-eval
 
 [![CI](https://github.com/arthurpenedo/atendimento-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/arthurpenedo/atendimento-eval/actions/workflows/ci.yml)
+[![Relatório](https://github.com/arthurpenedo/atendimento-eval/actions/workflows/relatorio.yml/badge.svg)](https://github.com/arthurpenedo/atendimento-eval/actions/workflows/relatorio.yml)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -16,6 +17,7 @@ O `atendimento-eval` responde isso com um pipeline de avaliação:
 2. **Critérios subjetivos com LLM-as-judge:** resolução, empatia e clareza, com nota de 1 a 5, justificativa e **trecho da conversa como evidência**.
 3. **Critérios críticos zeram a nota.** Um vazamento de CPF não é compensado por um atendimento simpático.
 4. **Comparação A/B entre versões**, com código de saída ≠ 0 quando há regressão, pronta para usar no CI.
+5. **Relatório HTML** com as piores conversas, a transcrição e o motivo de cada reprovação, para quem revisa sem abrir JSON.
 
 ## Demo
 
@@ -47,6 +49,20 @@ Sem regressões.
 
 Com `--juiz`, os critérios `resolucao`, `empatia` e `clareza` também são avaliados pelo Claude.
 
+### Relatório HTML
+
+```text
+$ atendimento-eval avaliar data/conversas_v2.jsonl --html relatorio.html --base v1.json
+```
+
+Um único arquivo, sem dependências, com modo escuro. Com `--base`, mostra a variação de cada critério contra a versão anterior e sinaliza regressões.
+
+![Relatório HTML da versão v1 do bot](docs/relatorio.png)
+
+### Regressão no CI
+
+O workflow [`relatorio.yml`](.github/workflows/relatorio.yml) avalia as duas versões a cada push e pull request, **falha se a versão nova regredir** em qualquer critério e anexa os relatórios HTML à execução (Actions → Artifacts). É o mesmo fluxo que um time usaria para aprovar uma mudança de prompt.
+
 ## Arquitetura
 
 ```
@@ -72,7 +88,8 @@ rubrica.yaml ────►              └──► judge.py (Claude, JSON Sc
 git clone https://github.com/arthurpenedo/atendimento-eval && cd atendimento-eval
 pip install -e ".[dev]"
 
-atendimento-eval avaliar data/conversas_v1.jsonl
+atendimento-eval avaliar data/conversas_v1.jsonl --saida v1.json
+atendimento-eval avaliar data/conversas_v2.jsonl --html relatorio.html --base v1.json
 atendimento-eval avaliar data/conversas_v2.jsonl --juiz   # precisa de ANTHROPIC_API_KEY
 pytest -q
 ```
@@ -85,10 +102,11 @@ Formato de entrada (JSONL, uma conversa por linha):
 
 ## Próximos passos
 
-- [ ] Relatório HTML com as piores conversas e as evidências do juiz
+- [x] Relatório HTML com as piores conversas e o motivo de cada reprovação
 - [ ] Concordância juiz × avaliador humano (kappa) em uma amostra rotulada
 - [ ] Avaliação em lote com a Batches API (50% mais barata)
-- [ ] GitHub Action que roda a comparação a cada mudança de prompt
+- [x] GitHub Action que roda a comparação a cada mudança
+- [ ] Evidências do juiz LLM destacadas na transcrição
 
 ---
 
