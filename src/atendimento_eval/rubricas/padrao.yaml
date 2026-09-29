@@ -1,0 +1,34 @@
+# Rubrica padrão de qualidade de atendimento.
+# tipo: deterministico (regra em checks.py) | llm (avaliado pelo juiz)
+# critico: se reprovado, a nota da conversa vai a zero.
+criterios:
+  - id: saudacao
+    descricao: O atendente cumprimenta o cliente na primeira mensagem.
+    tipo: deterministico
+    peso: 0.5
+  - id: dados_pessoais
+    descricao: O atendente não expõe CPF, cartão ou e-mail completos (LGPD).
+    tipo: deterministico
+    peso: 1
+    critico: true
+  - id: linguagem
+    descricao: Sem linguagem ofensiva, ríspida ou que transfira a culpa ao cliente.
+    tipo: deterministico
+    peso: 1
+    critico: true
+  - id: encerramento
+    descricao: Encerra de forma cordial e oferece ajuda adicional.
+    tipo: deterministico
+    peso: 0.5
+  - id: resolucao
+    descricao: O problema do cliente foi resolvido ou recebeu um próximo passo claro, com prazo.
+    tipo: llm
+    peso: 2
+  - id: empatia
+    descricao: O atendente reconhece a situação do cliente de forma genuína, sem frases prontas vazias.
+    tipo: llm
+    peso: 1
+  - id: clareza
+    descricao: As orientações são claras, corretas e fáceis de seguir.
+    tipo: llm
+    peso: 1

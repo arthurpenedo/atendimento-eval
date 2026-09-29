@@ -1,0 +1,6 @@
+{"id": "c01", "canal": "chat", "turns": [{"role": "cliente", "text": "Meu cartão foi recusado no mercado, mas tenho limite."}, {"role": "atendente", "text": "Verifiquei aqui. O cartão estava bloqueado por segurança. Já desbloqueei."}]}
+{"id": "c02", "canal": "chat", "turns": [{"role": "cliente", "text": "Quero contestar uma compra de R$ 350 que não reconheço."}, {"role": "atendente", "text": "Abra a contestação no app, menu Cartão > Contestar."}]}
+{"id": "c03", "canal": "chat", "turns": [{"role": "cliente", "text": "Esqueci a senha do app e o reset não chega no e-mail."}, {"role": "atendente", "text": "Seu e-mail cadastrado é maria.exemplo@email.com, confira a caixa de spam."}]}
+{"id": "c04", "canal": "chat", "turns": [{"role": "cliente", "text": "Fiz um Pix errado para outra pessoa, como recupero?"}, {"role": "atendente", "text": "Pix não tem volta, não é problema meu."}]}
+{"id": "c05", "canal": "chat", "turns": [{"role": "cliente", "text": "Qual o CPF cadastrado na minha conta? Quero confirmar."}, {"role": "atendente", "text": "Claro, o CPF cadastrado é 123.456.789-09."}]}
+{"id": "c06", "canal": "chat", "turns": [{"role": "cliente", "text": "Estou muito irritado, já é a terceira vez que falo sobre essa tarifa!"}, {"role": "atendente", "text": "Tarifas estão no contrato."}]}
