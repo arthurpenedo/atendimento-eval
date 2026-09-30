@@ -65,6 +65,20 @@ Um único arquivo, sem dependências, com modo escuro. Com `--base`, mostra a va
 
 O workflow [`relatorio.yml`](.github/workflows/relatorio.yml) avalia as duas versões a cada push e pull request, **falha se a versão nova regredir** em qualquer critério anexa os relatórios HTML à execução e publica o da `main` no [GitHub Pages](https://arthurpenedo.github.io/atendimento-eval/). É o mesmo fluxo que um time usaria para aprovar uma mudança de prompt.
 
+## Com o Claude de verdade
+
+O juiz rodou de verdade (30/09/2026, `claude-opus-5-5`) na mesma conversa nas duas versões do bot — resultado completo em [`docs/exemplo-juiz-c06.json`](docs/exemplo-juiz-c06.json):
+
+| | v1 | v2 |
+|---|---|---|
+| Atendente | "Tarifas estão no contrato." | "Olá! Você tem toda razão em estar chateado; três contatos sobre o mesmo assunto é muito. Estornei a tarifa de manutenção de setembro (R$ 19,90), cai em até 2 dias úteis [...]" |
+| Resolução | 0,00 · "não investigou qual tarifa era, não ofereceu estorno, análise nem qualquer próximo passo" | 1,00 · "estorno da tarifa identificada, com valor e prazo definidos" |
+| Empatia | 0,00 · "ignorou totalmente essas informações" | 0,75 · "reconhecimento específico [...] porém o fechamento é protocolar e não traz um pedido de desculpas" |
+| Clareza | 0,00 | 0,75 · "faltou um número de protocolo" |
+| **Nota final** | **29%** | **93%** |
+
+O juiz não é bajulador: mesmo na versão boa, tira pontos com justificativa e evidência citada. Custo medido: **US$ 0,013 por conversa** (≈ 900 tokens de entrada, 500 de saída).
+
 ## Arquitetura
 
 ```

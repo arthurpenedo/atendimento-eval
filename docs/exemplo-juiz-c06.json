@@ -1,0 +1,100 @@
+{
+  "v1": {
+    "conversation_id": "c06",
+    "nota_final": 0.286,
+    "reprovada_por_critico": false,
+    "resultados": [
+      {
+        "criterio": "saudacao",
+        "nota": 0.0,
+        "aprovado": false,
+        "justificativa": "O atendente não cumprimentou o cliente na primeira mensagem."
+      },
+      {
+        "criterio": "dados_pessoais",
+        "nota": 1.0,
+        "aprovado": true,
+        "justificativa": "Nenhum dado pessoal exposto pelo atendente."
+      },
+      {
+        "criterio": "linguagem",
+        "nota": 1.0,
+        "aprovado": true,
+        "justificativa": "Nenhum termo inadequado encontrado."
+      },
+      {
+        "criterio": "encerramento",
+        "nota": 0.0,
+        "aprovado": false,
+        "justificativa": "A conversa termina sem encerramento cordial."
+      },
+      {
+        "criterio": "resolucao",
+        "nota": 0.0,
+        "aprovado": false,
+        "justificativa": "O atendente não investigou qual tarifa era, não ofereceu estorno, análise nem qualquer próximo passo ou prazo. O cliente, já em seu terceiro contato, ficou sem encaminhamento algum. (evidência: \"[ATENDENTE] Tarifas estão no contrato.\")"
+      },
+      {
+        "criterio": "empatia",
+        "nota": 0.0,
+        "aprovado": false,
+        "justificativa": "O cliente expressou irritação e disse ser o terceiro contato, mas o atendente ignorou totalmente essas informações. Não houve pedido de desculpas nem reconhecimento da frustração, e a resposta seca e defensiva tende a agravar a insatisfação. (evidência: \"[CLIENTE] Estou muito irritado, já é a terceira vez que falo sobre essa tarifa! / [ATENDENTE] Tarifas estão no contrato.\")"
+      },
+      {
+        "criterio": "clareza",
+        "nota": 0.0,
+        "aprovado": false,
+        "justificativa": "A resposta é curta, mas não orienta nada. Não identifica a tarifa, não explica o motivo da cobrança, não indica onde consultar o contrato nem como contestar. É uma frase genérica que não pode ser seguida como orientação. (evidência: \"[ATENDENTE] Tarifas estão no contrato.\")"
+      }
+    ]
+  },
+  "v2": {
+    "conversation_id": "c06",
+    "nota_final": 0.929,
+    "reprovada_por_critico": false,
+    "resultados": [
+      {
+        "criterio": "saudacao",
+        "nota": 1.0,
+        "aprovado": true,
+        "justificativa": "Primeira mensagem do atendente cumprimenta o cliente."
+      },
+      {
+        "criterio": "dados_pessoais",
+        "nota": 1.0,
+        "aprovado": true,
+        "justificativa": "Nenhum dado pessoal exposto pelo atendente."
+      },
+      {
+        "criterio": "linguagem",
+        "nota": 1.0,
+        "aprovado": true,
+        "justificativa": "Nenhum termo inadequado encontrado."
+      },
+      {
+        "criterio": "encerramento",
+        "nota": 1.0,
+        "aprovado": true,
+        "justificativa": "Encerramento cordial e oferta de ajuda adicional."
+      },
+      {
+        "criterio": "resolucao",
+        "nota": 1.0,
+        "aprovado": true,
+        "justificativa": "O atendente resolveu de forma concreta: realizou o estorno da tarifa identificada, com valor e prazo definidos, e registrou a reclamação para evitar recorrência, respondendo diretamente à frustração de contatos repetidos. (evidência: \"Estornei a tarifa de manutenção de setembro (R$ 19,90), cai em até 2 dias úteis, e registrei a reclamação para evitar recorrência.\")"
+      },
+      {
+        "criterio": "empatia",
+        "nota": 0.75,
+        "aprovado": true,
+        "justificativa": "O reconhecimento é específico à situação, pois menciona os três contatos e valida a irritação do cliente, sem soar como frase pronta genérica. O fechamento, porém, é protocolar e não traz um pedido de desculpas pela falha recorrente, o que tornaria a empatia mais completa. (evidência: \"Você tem toda razão em estar chateado; três contatos sobre o mesmo assunto é muito. [...] Agradecemos o contato e a paciência.\")"
+      },
+      {
+        "criterio": "clareza",
+        "nota": 0.75,
+        "aprovado": true,
+        "justificativa": "A mensagem é objetiva e informa o que foi feito, o valor, o mês de referência e o prazo, sem exigir ação do cliente. Faltou um número de protocolo e a explicação sobre o que 'evitar recorrência' significa na prática (se a tarifa deixará de ser cobrada ou não), o que pode gerar dúvida em cobranças futuras. (evidência: \"registrei a reclamação para evitar recorrência\")"
+      }
+    ]
+  }
+}
