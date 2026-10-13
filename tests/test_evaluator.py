@@ -7,7 +7,7 @@ import pytest
 from atendimento_eval import compare, evaluate, evaluate_all, load_conversations, load_rubric, summarize
 from atendimento_eval.checks import check_dados_pessoais, check_saudacao
 from atendimento_eval.cli import DEFAULT_RUBRIC
-from atendimento_eval.judge import ClaudeJudge
+from atendimento_eval.judge import ClaudeJudge, OllamaJudge
 from atendimento_eval.models import Conversation
 
 DATA = Path(__file__).parent.parent / "data"
@@ -68,3 +68,37 @@ def test_claude_judge_with_fake_client():
     assert not results["empatia"].aprovado
     assert results["clareza"].justificativa == "O juiz não avaliou este critério."
     assert calls[0]["fallbacks"] == "default"
+
+
+def _ollama(content):
+    calls = []
+
+    def post(url, payload):
+        calls.append((url, payload))
+        return {"message": {"content": content}}
+
+    return post, calls
+
+
+def test_ollama_judge_parses_structured_output():
+    payload = {"avaliacoes": [
+        {"criterio": "resolucao", "nota": 5, "justificativa": "resolveu", "evidencia": "Já desbloqueei"},
+        {"criterio": "empatia", "nota": 2, "justificativa": "seco", "evidencia": "Verifiquei aqui"},
+    ]}
+    post, calls = _ollama(json.dumps(payload))
+    criteria = [c for c in load_rubric(DEFAULT_RUBRIC) if c.tipo == "llm"]
+    results = {r.criterio: r for r in OllamaJudge(post=post)(conv("Olá! Já desbloqueei."), criteria)}
+
+    assert results["resolucao"].aprovado and not results["empatia"].aprovado
+    assert results["clareza"].justificativa == "O juiz não avaliou este critério."
+    url, sent = calls[0]
+    assert url.endswith("/api/chat") and sent["stream"] is False and sent["options"]["temperature"] == 0
+    assert "avaliacoes" in sent["format"]["properties"]
+
+
+@pytest.mark.parametrize("content", ["isto não é json", json.dumps({"avaliacoes": [{"criterio": "x"}]})])
+def test_ollama_judge_invalid_output_fails_closed(content):
+    post, _ = _ollama(content)
+    criteria = [c for c in load_rubric(DEFAULT_RUBRIC) if c.tipo == "llm"]
+    results = OllamaJudge(post=post)(conv("Olá!"), criteria)
+    assert results and all(not r.aprovado and r.nota == 0.0 for r in results)

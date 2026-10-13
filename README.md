@@ -79,6 +79,17 @@ O juiz rodou de verdade (30/09/2026, `claude-opus-5-5`) na mesma conversa nas du
 
 O juiz não é bajulador: mesmo na versão boa, tira pontos com justificativa e evidência citada. Custo medido: **US$ 0,013 por conversa** (≈ 900 tokens de entrada, 500 de saída).
 
+## Juiz com modelo aberto (grátis)
+
+`--juiz ollama` troca o Claude por um modelo aberto (padrão `qwen2.5:3b`, via [Ollama](https://ollama.com)): sem chave de API e sem custo. O workflow `relatorio.yml` instala o Ollama no runner, roda o juiz nas duas versões e publica `juiz.html` no Pages ao lado do relatório determinístico. Esse passo não bloqueia o gate de regressão: se o modelo falhar, o resto continua.
+
+```bash
+ollama pull qwen2.5:3b
+atendimento-eval avaliar data/conversas_v2.jsonl --juiz ollama --html juiz.html
+```
+
+Saída inválida do modelo vira "critério não avaliado" (reprovado), nunca nota inventada. Limite honesto: um modelo de 3B é bem menos confiável que o Claude como juiz; o número da concordância com humanos (kappa) ainda não foi medido. Os testes usam um cliente falso; a execução real no CI ainda não foi verificada.
+
 ## Arquitetura
 
 ```

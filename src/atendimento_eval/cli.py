@@ -1,6 +1,6 @@
 """CLI.
 
-    atendimento-eval avaliar data/conversas_v1.jsonl [--rubrica rubricas/padrao.yaml] [--juiz] [--saida r.json]
+    atendimento-eval avaliar data/conversas_v1.jsonl [--rubrica rubricas/padrao.yaml] [--juiz [claude|ollama]] [--saida r.json]
                              [--html relatorio.html] [--base resumo_v1.json]
     atendimento-eval comparar resumo_v1.json resumo_v2.json
 """
@@ -36,7 +36,8 @@ def main(argv: list[str] | None = None) -> int:
     p_eval = sub.add_parser("avaliar", help="avalia um arquivo JSONL de conversas")
     p_eval.add_argument("conversas", type=Path)
     p_eval.add_argument("--rubrica", type=Path, default=DEFAULT_RUBRIC)
-    p_eval.add_argument("--juiz", action="store_true", help="usa o Claude para os critérios do tipo 'llm'")
+    p_eval.add_argument("--juiz", nargs="?", const="claude", choices=["claude", "ollama"],
+                        help="juiz para os critérios do tipo 'llm': claude (padrão, paga) ou ollama (modelo aberto, grátis)")
     p_eval.add_argument("--saida", type=Path, help="salva resultados e resumo em JSON")
     p_eval.add_argument("--html", type=Path, help="gera relatório HTML com as piores conversas")
     p_eval.add_argument("--base", type=Path, help="JSON de outra execução (--saida) para comparar no relatório")
@@ -51,9 +52,9 @@ def main(argv: list[str] | None = None) -> int:
         criteria = load_rubric(args.rubrica)
         judge = None
         if args.juiz:
-            from .judge import ClaudeJudge
+            from .judge import ClaudeJudge, OllamaJudge
 
-            judge = ClaudeJudge()
+            judge = OllamaJudge() if args.juiz == "ollama" else ClaudeJudge()
         conversations = load_conversations(args.conversas)
         results = evaluate_all(conversations, criteria, judge)
         summary = summarize(results)
