@@ -88,7 +88,22 @@ ollama pull qwen2.5:3b
 atendimento-eval avaliar data/conversas_v2.jsonl --juiz ollama --html juiz.html
 ```
 
-Saída inválida do modelo vira "critério não avaliado" (reprovado), nunca nota inventada. Limite honesto: um modelo de 3B é bem menos confiável que o Claude como juiz; o número da concordância com humanos (kappa) ainda não foi medido. Os testes usam um cliente falso; a execução real no CI ainda não foi verificada.
+Saída inválida do modelo vira "critério não avaliado" (reprovado), nunca nota inventada.
+
+**Medido no CI** (13/10/2026, `qwen2.5:3b` em CPU, ~2,5 min por versão; [juiz.html](https://arthurpenedo.github.io/atendimento-eval/juiz.html)):
+
+| | v1 | v2 |
+|---|---|---|
+| Nota média (6 conversas) | 21% | 72% |
+| Conversa c06, juiz aberto | 29% | 71% |
+| Conversa c06, Claude | 29% | 93% |
+
+O juiz aberto separa a versão ruim da boa (+51 pontos) e concorda com o Claude na conversa ruim, mas é bem mais duro e menos preciso na boa:
+- deu **empatia 0% em todas as conversas da v2**, chamando de "frase pronta" até o reconhecimento específico que o Claude premiou;
+- apontou regressão em `resolucao` (17%) com justificativas fracas, como achar "10 dias úteis" um prazo longo;
+- em um caso a evidência citada não bate letra por letra com a conversa ("registrou" em vez de "registrei").
+
+Conclusão: serve para triagem grátis e para mostrar a tendência, não para aprovar mudança sozinho. A concordância com humanos (kappa) ainda não foi medida.
 
 ## Arquitetura
 
