@@ -3,8 +3,14 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-
-from atendimento_eval import compare, evaluate, evaluate_all, load_conversations, load_rubric, summarize
+from atendimento_eval import (
+    compare,
+    evaluate,
+    evaluate_all,
+    load_conversations,
+    load_rubric,
+    summarize,
+)
 from atendimento_eval.checks import check_dados_pessoais, check_saudacao
 from atendimento_eval.cli import DEFAULT_RUBRIC
 from atendimento_eval.judge import ClaudeJudge, OllamaJudge
