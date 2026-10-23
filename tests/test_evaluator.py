@@ -3,6 +3,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+
 from atendimento_eval import (
     compare,
     evaluate,
