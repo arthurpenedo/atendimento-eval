@@ -83,11 +83,14 @@ def render_html(
     def d(key: str) -> float | None:
         return summary[key] - base[key] if base else None
 
+    ev = summary.get("evidencias")
+    evidencias = (f'\n  <div class="card kpi"><span class="muted">Evidências do juiz fora da conversa</span>'
+                  f'<b>{ev["fora_da_conversa"]} de {ev["citadas"]}</b></div>') if ev else ""
     kpis = f"""
 <div class="kpis">
   <div class="card kpi"><span class="muted">Nota média</span><b>{_pct(summary['nota_media'])}{_delta(d('nota_media'))}</b></div>
   <div class="card kpi"><span class="muted">Conversas avaliadas</span><b>{summary['conversas']}</b></div>
-  <div class="card kpi"><span class="muted">Reprovadas por critério crítico</span><b>{summary['reprovadas_por_critico']}</b></div>
+  <div class="card kpi"><span class="muted">Reprovadas por critério crítico</span><b>{summary['reprovadas_por_critico']}</b></div>{evidencias}
 </div>"""
 
     rows = []

@@ -6,6 +6,7 @@ uma justificativa e o trecho da conversa usado como evidência (saída em JSON S
 
 import json
 import os
+import re
 import urllib.request
 from typing import Callable, Protocol
 
@@ -80,7 +81,7 @@ class ClaudeJudge:
         if response.stop_reason == "refusal":
             raise RefusalError(f"O juiz recusou avaliar a conversa {conv.id}.")
         text = next(block.text for block in response.content if block.type == "text")
-        return to_results(JudgeOutput.model_validate(json.loads(text)), criteria)
+        return to_results(JudgeOutput.model_validate(json.loads(text)), criteria, conv)
 
 
 def _post_json(url: str, payload: dict) -> dict:
@@ -117,11 +118,24 @@ class OllamaJudge:
             output = JudgeOutput.model_validate(json.loads(response["message"]["content"]))
         except (KeyError, ValueError):  # JSON inválido ou fora do schema (ValidationError é ValueError)
             output = JudgeOutput(avaliacoes=[])
-        return to_results(output, criteria)
+        return to_results(output, criteria, conv)
 
 
-def to_results(output: JudgeOutput, criteria: list[Criterion]) -> list[CriterionResult]:
-    """Converte notas 1-5 em 0-1 e garante um resultado por critério pedido."""
+def _normalizar(texto: str) -> str:
+    return re.sub(r"\s+", " ", texto).strip(" \"'“”‘’").casefold()
+
+
+def evidencia_na_conversa(evidencia: str, conv: Conversation) -> bool:
+    """O trecho citado pelo juiz aparece literalmente (sem contar espaços, aspas e maiúsculas) em algum turno?"""
+    trecho = _normalizar(evidencia)
+    return bool(trecho) and any(trecho in _normalizar(t.text) for t in conv.turns)
+
+
+def to_results(output: JudgeOutput, criteria: list[Criterion], conv: Conversation | None = None) -> list[CriterionResult]:
+    """Converte notas 1-5 em 0-1 e garante um resultado por critério pedido.
+
+    Com `conv`, marca se a evidência citada existe de fato na conversa (juiz pequeno costuma inventar trecho).
+    """
     by_id = {s.criterio: s for s in output.avaliacoes}
     results = []
     for c in criteria:
@@ -136,5 +150,6 @@ def to_results(output: JudgeOutput, criteria: list[Criterion]) -> list[Criterion
             nota=round((nota - 1) / 4, 2),
             aprovado=nota >= PASS_THRESHOLD,
             justificativa=f"{score.justificativa} (evidência: \"{score.evidencia}\")",
+            evidencia_literal=evidencia_na_conversa(score.evidencia, conv) if conv else None,
         ))
     return results

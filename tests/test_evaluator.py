@@ -87,6 +87,23 @@ def _ollama(content):
     return post, calls
 
 
+def test_judge_counts_evidence_missing_from_conversation():
+    payload = {"avaliacoes": [
+        {"criterio": "resolucao", "nota": 5, "justificativa": "resolveu", "evidencia": "“já desbloqueei”"},
+        {"criterio": "empatia", "nota": 4, "justificativa": "gentil", "evidencia": "Sinto muito pelo transtorno"},
+    ]}
+    post, _ = _ollama(json.dumps(payload))
+    results = evaluate_all([conv("Olá! Já   desbloqueei seu cartão.")], load_rubric(DEFAULT_RUBRIC), OllamaJudge(post=post))
+    por_criterio = {cr.criterio: cr for cr in results[0].resultados}
+    assert por_criterio["resolucao"].evidencia_literal is True  # aspas, caixa e espaços não contam
+    assert por_criterio["empatia"].evidencia_literal is False  # frase inventada pelo modelo
+    assert summarize(results)["evidencias"] == {"citadas": 2, "fora_da_conversa": 1}
+
+
+def test_summary_without_judge_has_no_evidence_counts():
+    assert "evidencias" not in summarize(evaluate_all([conv("Olá! Posso ajudar?")], load_rubric(DEFAULT_RUBRIC)))
+
+
 def test_ollama_judge_parses_structured_output():
     payload = {"avaliacoes": [
         {"criterio": "resolucao", "nota": 5, "justificativa": "resolveu", "evidencia": "Já desbloqueei"},

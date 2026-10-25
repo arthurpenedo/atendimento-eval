@@ -39,6 +39,8 @@ class CriterionResult(BaseModel):
     """De 0 a 1."""
     aprovado: bool
     justificativa: str
+    evidencia_literal: bool | None = None
+    """Só para critérios do juiz: o trecho citado como evidência aparece na conversa? (None = sem juiz)"""
 
 
 class ConversationResult(BaseModel):

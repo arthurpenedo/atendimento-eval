@@ -54,13 +54,17 @@ def summarize(results: list[ConversationResult]) -> dict:
     for r in results:
         for cr in r.resultados:
             by_criterion.setdefault(cr.criterio, []).append(cr.aprovado)
-    return {
+    evidencias = [cr.evidencia_literal for r in results for cr in r.resultados if cr.evidencia_literal is not None]
+    summary = {
         "conversas": len(results),
         "nota_media": round(sum(r.nota_final for r in results) / len(results), 3) if results else 0.0,
         "reprovadas_por_critico": sum(r.reprovada_por_critico for r in results),
         "aprovacao_por_criterio": {k: round(sum(v) / len(v), 3) for k, v in sorted(by_criterion.items())},
         "piores": [r.conversation_id for r in sorted(results, key=lambda r: r.nota_final) if r.nota_final < 1][:3],
     }
+    if evidencias:  # só quando um juiz LLM avaliou
+        summary["evidencias"] = {"citadas": len(evidencias), "fora_da_conversa": evidencias.count(False)}
+    return summary
 
 
 def compare(before: dict, after: dict) -> dict:

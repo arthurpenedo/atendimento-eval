@@ -25,6 +25,9 @@ def _print_summary(summary: dict) -> None:
         bar = "█" * round(rate * 20)
         print(f"  {crit:<16} {bar:<20} {rate:.0%}")
     print(f"\nPiores conversas: {', '.join(summary['piores']) or 'nenhuma'}")
+    if "evidencias" in summary:
+        ev = summary["evidencias"]
+        print(f"Evidências do juiz que não aparecem na conversa: {ev['fora_da_conversa']} de {ev['citadas']}")
 
 
 def main(argv: list[str] | None = None) -> int:
