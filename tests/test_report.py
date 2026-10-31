@@ -51,3 +51,19 @@ def test_cli_writes_html(tmp_path):
     html = out.read_text(encoding="utf-8")
     assert html.startswith("<!doctype html>")
     assert "comparado com a versão base" in html
+
+
+def test_nota_tag_thresholds_and_critical_failure():
+    from atendimento_eval.models import ConversationResult
+    from atendimento_eval.report import _delta, _nota_tag
+
+    def tag(nota, critico=False):
+        return _nota_tag(ConversationResult(conversation_id="c", nota_final=nota,
+                                            reprovada_por_critico=critico, resultados=[]))
+
+    assert 'class="tag ok"' in tag(0.8)
+    assert 'class="tag warn"' in tag(0.79)
+    assert 'class="tag bad"' in tag(0.49)
+    assert "reprovada (crítico)" in tag(1.0, critico=True)  # o crítico vale mais que a nota
+    assert _delta(None) == "" and _delta(0.0004) == ""  # variação desprezível não aparece
+    assert 'class="delta down"' in _delta(-0.1)
