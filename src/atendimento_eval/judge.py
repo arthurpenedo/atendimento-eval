@@ -8,7 +8,8 @@ import json
 import os
 import re
 import urllib.request
-from typing import Callable, Protocol
+from collections.abc import Callable
+from typing import Protocol
 
 from pydantic import BaseModel, ConfigDict
 
